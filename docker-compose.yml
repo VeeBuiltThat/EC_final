@@ -1,0 +1,128 @@
+version: "3.8"
+
+# ─────────────────────────────────────────────────────────────────────
+# EAI Capstone — Docker Compose
+#
+# Host ports are configurable via .env file (copy from .env.example).
+# Internal service-to-service communication always uses fixed internal ports
+# and Docker service names as hostnames.
+#
+# Start:   docker-compose up -d --build
+# Stop:    docker-compose down
+# Rebuild: docker-compose up -d --build --force-recreate
+# ─────────────────────────────────────────────────────────────────────
+
+services:
+
+  # ── Node-RED Orchestration & Integration Layer ──────────────────────
+  # This is your integration bus and orchestration engine.
+  # Open the editor at http://localhost:${NODERED_HOST_PORT}
+  # Inside flows, use service names as hostnames (e.g. http://order-service:3001)
+  nodered:
+    build:
+      context: .
+      dockerfile: Dockerfile.nodered
+    ports:
+      - "${NODERED_HOST_PORT:-1880}:1880"
+    volumes:
+      - ./flows.json:/data/flows.json
+    environment:
+      # Downstream service URLs — use these in your http-request nodes
+      ORDER_URL: http://order-service:3001
+      PAYMENT_URL: http://payment-service:3002
+      INVENTORY_URL: http://inventory-service:3003
+      NOTIFICATION_URL: http://notification-service:3004
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+    networks:
+      - eai-capstone-network
+    depends_on:
+      - rabbitmq
+      - order-service
+      - payment-service
+      - inventory-service
+      - notification-service
+
+  # ── Order Service ────────────────────────────────────────────────────
+  # Business-domain service for order management.
+  # YOU MUST IMPLEMENT: order-service/server.js
+  order-service:
+    build: ./order-service
+    ports:
+      - "${ORDER_HOST_PORT:-3001}:3001"
+    environment:
+      PORT: 3001
+      # Your integration entry-point URL (Option B: call Node-RED from here)
+      NODERED_URL: http://nodered:1880
+      # Available if you need to call downstream services directly (not recommended)
+      PAYMENT_URL: http://payment-service:3002
+      INVENTORY_URL: http://inventory-service:3003
+      NOTIFICATION_URL: http://notification-service:3004
+    networks:
+      - eai-capstone-network
+
+  # ── Payment Service ──────────────────────────────────────────────────
+  # Handles payment authorization and refunds.
+  # YOU MUST IMPLEMENT: payment-service/server.js
+  # Change PAYMENT_FAIL_MODE to 'always' to test compensation logic.
+  payment-service:
+    build: ./payment-service
+    ports:
+      - "${PAYMENT_HOST_PORT:-3002}:3002"
+    environment:
+      PORT: 3002
+      # never | always | random
+      PAYMENT_FAIL_MODE: never
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      PAYMENT_COMMAND_QUEUE: payment.commands
+      PAYMENT_REPLY_QUEUE: payment.replies
+      PAYMENT_DLX: payment.dlx
+      PAYMENT_DLQ: payment.dlq
+    networks:
+      - eai-capstone-network
+    depends_on:
+      - rabbitmq
+
+  # ── Inventory Service ────────────────────────────────────────────────
+  # Handles stock reservation and release.
+  # YOU MUST IMPLEMENT: inventory-service/server.js
+  # Change INVENTORY_FAIL_MODE to 'always' to test compensation logic.
+  inventory-service:
+    build: ./inventory-service
+    ports:
+      - "${INVENTORY_HOST_PORT:-3003}:3003"
+    environment:
+      PORT: 3003
+      # never | always | random
+      INVENTORY_FAIL_MODE: never
+    networks:
+      - eai-capstone-network
+
+  # ── Notification Service ─────────────────────────────────────────────
+  # Pre-built mock — DO NOT MODIFY.
+  # Logs notifications to a file. Use GET /admin/logs to verify calls.
+  notification-service:
+    build: ./notification-service
+    ports:
+      - "${NOTIFICATION_HOST_PORT:-3004}:3004"
+    environment:
+      PORT: 3004
+    volumes:
+      - ./notification-service/data:/data
+    networks:
+      - eai-capstone-network
+
+  # ── RabbitMQ (Optional — Bonus) ──────────────────────────────────────
+  # Uncomment this service if you choose to use RabbitMQ in your integration.
+  # Management UI: http://localhost:${RABBITMQ_MGMT_HOST_PORT:-15672}  (guest/guest)
+  
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "${RABBITMQ_AMQP_HOST_PORT:-5672}:5672"
+      - "${RABBITMQ_MGMT_HOST_PORT:-15672}:15672"
+    networks:
+      - eai-capstone-network
+
+networks:
+  eai-capstone-network:
+    driver: bridge
