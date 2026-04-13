@@ -1,0 +1,35 @@
+{
+  "orderId": "WEB-2024-001",
+  "orderType": "standard",
+  "customer": {
+    "name": "Anna Berzina",
+    "email": "anna.berzina@example.com",
+    "address": {
+      "street": "Brivibas iela 100",
+      "city": "Riga",
+      "postalCode": "LV-1001",
+      "country": "LV"
+    }
+  },
+  "items": [
+    {
+      "productId": "PROD-001",
+      "productName": "Wireless Mouse",
+      "quantity": 2,
+      "unitPrice": 24.99,
+      "currency": "EUR",
+      "taxRate": 0.21
+    },
+    {
+      "productId": "PROD-002",
+      "productName": "USB-C Hub",
+      "quantity": 1,
+      "unitPrice": 49.99,
+      "currency": "EUR",
+      "taxRate": 0.21
+    }
+  ],
+  "orderDate": "2024-11-15T10:30:00Z",
+  "status": "new",
+  "currency": "EUR"
+}

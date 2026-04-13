@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PurchaseOrder orderId="B2B-2024-100" orderType="b2b" orderDate="2024-11-15T14:00:00Z">
+  <BuyerParty>
+    <Name>TechCorp Ltd</Name>
+    <ContactEmail>procurement@techcorp.example.com</ContactEmail>
+    <ShipToAddress country="GB">
+      <Street>42 Oxford Street</Street>
+      <City>London</City>
+      <PostalCode>W1D 1BJ</PostalCode>
+    </ShipToAddress>
+  </BuyerParty>
+  <LineItems currency="GBP">
+    <LineItem sku="SKU-PROD-001" quantity="10">
+      <Description>Wireless Mouse</Description>
+    </LineItem>
+    <LineItem sku="SKU-PROD-003" quantity="5">
+      <Description>Mechanical Keyboard</Description>
+    </LineItem>
+    <LineItem sku="SKU-PROD-004" quantity="20">
+      <Description>Monitor Stand</Description>
+    </LineItem>
+  </LineItems>
+  <Status>NEW</Status>
+</PurchaseOrder>

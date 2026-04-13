@@ -1,0 +1,14 @@
+{
+  "name": "payment-service",
+  "version": "1.0.0",
+  "description": "Payment Service — EAI Capstone (student builds this)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "amqplib": "^0.10.4",
+    "express": "^4.18.2",
+    "uuid": "^9.0.0"
+  }
+}

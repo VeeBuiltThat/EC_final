@@ -1,0 +1,16 @@
+# Local environment overrides — never commit secrets or port overrides
+.env
+
+# Node.js dependencies
+node_modules/
+*/node_modules/
+
+# Runtime data files (logs, notification records)
+notification-service/data/*.log
+notification-service/data/*.json
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db

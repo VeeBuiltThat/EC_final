@@ -1,0 +1,21 @@
+FROM nodered/node-red:latest
+
+# Pre-install palette nodes so students can use them without manual palette management:
+#   node-red-contrib-amqp — AMQP/RabbitMQ nodes (amqp-in, amqp-out) for bonus RabbitMQ integration
+#   node-red-contrib-xml  — XML parsing nodes for B2B order transformation
+#
+# The npm release of node-red-contrib-amqp is incomplete and misses the built lib/ assets,
+# so the image builds the package from source before starting Node-RED.
+USER root
+RUN apk add --no-cache git python3 make g++ \
+ && npm install node-red-contrib-xml \
+ && rm -rf /tmp/node-red-contrib-amqp \
+ && git clone https://github.com/abreits/node-red-contrib-amqp.git /tmp/node-red-contrib-amqp \
+ && cd /tmp/node-red-contrib-amqp \
+ && npm install \
+ && npx gulp build_release \
+ && cp -R /tmp/node-red-contrib-amqp /usr/src/node-red/node_modules/node-red-contrib-amqp \
+ && cd /usr/src/node-red/node_modules/node-red-contrib-amqp \
+ && npm install --omit=dev \
+ && rm -rf /tmp/node-red-contrib-amqp
+USER node-red

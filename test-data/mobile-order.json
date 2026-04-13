@@ -1,0 +1,13 @@
+{
+  "oid": "MOB-2024-050",
+  "ot": "express",
+  "cust_name": "Janis Ozols",
+  "cust_email": "janis.ozols@example.com",
+  "addr": "Valnu iela 25, Riga, LV-1050, LV",
+  "prod_id": "001",
+  "prod_name": "Bluetooth Speaker",
+  "qty": 1,
+  "ts": 1731667800,
+  "st": 1,
+  "cur": 840
+}

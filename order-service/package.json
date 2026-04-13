@@ -1,0 +1,13 @@
+{
+  "name": "order-service",
+  "version": "1.0.0",
+  "description": "Order Service — EAI Capstone (student builds this)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "uuid": "^9.0.0"
+  }
+}

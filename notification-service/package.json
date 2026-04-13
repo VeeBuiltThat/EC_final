@@ -1,0 +1,12 @@
+{
+  "name": "notification-service",
+  "version": "1.0.0",
+  "description": "Pre-built notification mock for EAI Capstone",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}

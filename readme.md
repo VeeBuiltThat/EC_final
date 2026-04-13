@@ -312,3 +312,4 @@ curl -s -X POST http://localhost:1880/order \
 # Restore to normal (edit docker-compose.yml: set FAIL_MODE values back to 'never')
 docker compose up -d payment-service inventory-service
 ```
+ 

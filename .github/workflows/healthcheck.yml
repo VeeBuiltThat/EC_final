@@ -1,0 +1,49 @@
+name: Health Check
+
+# Runs on every push to confirm all services boot successfully.
+# This is NOT a grading pipeline — it only verifies the infrastructure starts.
+# Grading is performed manually by the instructor using Claude Code + GRADING.md.
+
+on: [push]
+
+jobs:
+  healthcheck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Copy .env.example to .env
+        run: cp .env.example .env
+
+      - name: Build and start all services
+        run: docker compose up -d --build
+
+      - name: Wait for services to initialize
+        run: sleep 25
+
+      - name: Check Node-RED health
+        run: |
+          for i in {1..10}; do
+            curl -sf http://localhost:1880/health && echo "Node-RED OK" && break
+            echo "Waiting for Node-RED... attempt $i"
+            sleep 3
+          done
+
+      - name: Check Order Service health
+        run: curl -sf http://localhost:3001/health
+
+      - name: Check Payment Service health
+        run: curl -sf http://localhost:3002/health
+
+      - name: Check Inventory Service health
+        run: curl -sf http://localhost:3003/health
+
+      - name: Check Notification Service health
+        run: curl -sf http://localhost:3004/health
+
+      - name: Cleanup
+        if: always()
+        run: docker compose down -v
